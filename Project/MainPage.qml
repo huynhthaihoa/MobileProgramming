@@ -41,8 +41,8 @@
 import QtQuick 2.6
 import QtQuick.Layouts 1.3
 import QtQuick.Controls 2.0
-import QtQuick.Controls.Material 2.0
-import QtQuick.Controls.Universal 2.0
+//import QtQuick.Controls.Material 2.0
+//import QtQuick.Controls.Universal 2.0
 import Qt.labs.settings 1.0
 
 ApplicationWindow {
@@ -52,59 +52,131 @@ ApplicationWindow {
     height: 520
     title: qsTr("My ICares")
     property int mainPage_iIndex: 0
-    header: ToolBar {
-        Material.foreground: "white"
-
-        RowLayout {
-            spacing: 20
-            anchors.fill: parent
-
-            ToolButton {
-                contentItem: Image {
-                    fillMode: Image.Pad
-                    horizontalAlignment: Image.AlignHCenter
-                    verticalAlignment: Image.AlignVCenter
-                    source: "qrc:/images/drawer.png"
-                }
-                onClicked: mainPage_Drawer.open()
-            }
-
-            Label {
-                id: mainPage_Label
-                text: "My ICares"
-                font.pixelSize: 20
-                elide: Label.ElideRight
-                horizontalAlignment: Qt.AlignHCenter
-                verticalAlignment: Qt.AlignVCenter
-                Layout.fillWidth: true
-            }
-
-            ToolButton {
-                contentItem: Image {
-                    fillMode: Image.Pad
-                    horizontalAlignment: Image.AlignHCenter
-                    verticalAlignment: Image.AlignVCenter
-                    source: "qrc:/images/menu.png"
-                }
-                onClicked: optionsMenu.open()
-
-                Menu {
-                    id: mainPage_Menu
-                    x: parent.width - width
-                    transformOrigin: Menu.TopRight
-
-                    MenuItem {
-                        text: "Settings"
-                        onTriggered: settingsPopup.open()
+    header: /*Item
+    {
+        height: 800*/
+        ToolBar
+        {
+        //        Material.foreground: "white"
+            id:mainPage_ToolbarStart
+            RowLayout
+            {
+                    spacing: 20
+                    anchors.fill: parent
+                    ToolButton
+                    {
+                        contentItem: Image
+                        {
+                            fillMode: Image.Pad
+                            horizontalAlignment: Image.AlignHCenter
+                            verticalAlignment: Image.AlignVCenter
+                            source: "qrc:/images/drawer.png"
+                        }
+                        onClicked: mainPage_Drawer.open()
                     }
-                    MenuItem {
-                        text: "About"
-                        onTriggered: aboutDialog.open()
+
+                    Label {
+                        id: mainPage_Label
+                        text: "My ICares"
+                        font.pixelSize: 20
+                        elide: Label.ElideRight
+                        horizontalAlignment: Qt.AlignHCenter
+                        verticalAlignment: Qt.AlignVCenter
+                        Layout.fillWidth: true
+                    }
+
+                    ToolButton {
+                        contentItem: Image {
+                            fillMode: Image.Pad
+                            horizontalAlignment: Image.AlignHCenter
+                            verticalAlignment: Image.AlignVCenter
+                            source: "qrc:/images/menu.png"
+                        }
+                        onClicked: optionsMenu.open()
+
+                        Menu {
+                            id: mainPage_Menu
+                            x: parent.width - width
+                            transformOrigin: Menu.TopRight
+
+                            MenuItem {
+                                text: "Settings"
+                                onTriggered: settingsPopup.open()
+                            }
+                            MenuItem {
+                                text: "About"
+                                onTriggered: aboutDialog.open()
+                            }
+                        }
                     }
                 }
-            }
         }
-    }
+//        Row
+//        {
+//            ToolBar
+//            {
+//                id:mainPage_ToolBarButton
+
+//                RowLayout
+//                {
+//                    Button
+//                    {
+//                        id: mainPage_DiseaseButton
+//                        text: "Diseases"
+//                        width: 80
+//                        anchors.margins: 20
+//                        onClicked:
+//                        {
+//                            mainPage_iIndex = 0
+//                            mainPage_Label.text = "Diseases"
+//                            mainPage_StackView.push("qrc:/pages/DiseasePage.qml")
+//                        }
+//                    }
+//                    Button
+//                    {
+//                        id:mainPage_HealthNewsButton
+//                        text: "Health News"
+//                        width: 80
+//                        //anchors.left: mainPage_DiseaseButton.left + mainPage_DiseaseButton.width
+//                        onClicked:
+//                        {
+//                            mainPage_iIndex = 1
+//                            mainPage_Label.text = "Health News"
+//                            mainPage_StackView.push("qrc:/pages/HealthNewsPage.qml")
+//                        }
+//                    }
+//                    Button
+//                    {
+//                        id:mainPage_CalendarButton
+//                        text: "Calendar"
+//                        width: 80
+//                        //anchors.left:mainPage_HealthNewsButton.left + mainPage_HealthNewsButton.width
+//                        onClicked:
+//                        {
+//                            mainPage_iIndex = 2
+//                            mainPage_Label.text = "Calendar"
+//                            mainPage_StackView.push("qrc:/pages/CalendarPage.qml")
+//                        }
+//                    }
+//                    Button
+//                    {
+//                        id:mainPage_LocationButton
+//                        text: "Location"
+//                        width: 80
+//                        //anchors.left: mainPage_CalendarButton.left + mainPage_CalendarButton.width
+//                        onClicked:
+//                        {
+//                            mainPage_iIndex = 3
+//                            mainPage_Label.text = "Location"
+//                            mainPage_StackView.push("qrc:/pages/LocationPage.qml")
+//                        }
+//                    }
+//                }
+
+//            }
+//        }
+
+//    }
     Drawer {
         id: mainPage_Drawer
         width: Math.min(mainPage_ApplicationWindow.width, mainPage_ApplicationWindow.height) / 3 * 2
@@ -112,24 +184,35 @@ ApplicationWindow {
 
         ListView {
             id: mainPage_ListView
-            currentIndex: -1
+            currentIndex: 0
             anchors.fill: parent
 
             delegate: ItemDelegate {
                 width: parent.width
                 text: model.title
                 highlighted: ListView.isCurrentItem
-                onClicked: {
-                    //if (listView.currentIndex != index) {
-                        //listView.currentIndex = index
-                        mainPage_Label.text = model.title
-                        mainPage_StackView.push(model.source)
-                    //}
-                    mainPage_Drawer.close()
+                onClicked:
+                {
+                  //  if (mainPage_ListView.currentIndex != 0) {
+                                           //listView.currentIndex = index
+                   mainPage_Label.text = model.title
+                   mainPage_StackView.push(model.source)
+//                                       }
+//                                       else
+//                                       {
+//                                           if(mainPage_iIndex != 0)
+//                                           {
+//                                               mainPage_Label.text = model.title
+//                                               mainPage_StackView.pop()
+//                                           }
+//                                       }
+                   mainPage_iIndex = mainPage_ListView.currentIndex
+                   mainPage_Drawer.close()
                 }
             }
 
-            model: ListModel {
+            model: ListModel
+            {
                 id:mainPage_ListModel
                 ListElement {title: "Home"; source: "qrc:/MainPage.qml"}
                 ListElement {title: "Disease"; source: "qrc:/pages/DiseasePage.qml"}
@@ -142,10 +225,20 @@ ApplicationWindow {
             ScrollIndicator.vertical: ScrollIndicator { }
         }
     }
-    StackView {
+    StackView
+    {
         id: mainPage_StackView
         anchors.fill: parent
-
+        Keys.onReleased:
+        {
+            if(event.key === Qt.Key_Back)
+            {
+                event.accepted = true
+//                mainPage_iIndex = 0
+                mainPage_Label.text = "Home"
+                mainPage_StackView.pop()
+            }
+        }
         initialItem: Pane {
             id: mainPage_Pane
 
@@ -177,7 +270,8 @@ ApplicationWindow {
                     id: mainPage_DiseaseButton
                     text: "Diseases"
                     width: 80
-                    anchors.margins: 20
+                    anchors.left: mainPage_ApplicationWindow.left
+                    //anchors.margins: 20
                     onClicked:
                     {
                         mainPage_iIndex = 0
@@ -190,7 +284,8 @@ ApplicationWindow {
                     id:mainPage_HealthNewsButton
                     text: "Health News"
                     width: 80
-                    //anchors.left: mainPage_DiseaseButton.left + mainPage_DiseaseButton.width
+
+                    anchors.left: mainPage_DiseaseButton.right
                     onClicked:
                     {
                         mainPage_iIndex = 1
@@ -203,7 +298,7 @@ ApplicationWindow {
                     id:mainPage_CalendarButton
                     text: "Calendar"
                     width: 80
-                    //anchors.left:mainPage_HealthNewsButton.left + mainPage_HealthNewsButton.width
+                    anchors.left:mainPage_HealthNewsButton.right
                     onClicked:
                     {
                         mainPage_iIndex = 2
@@ -216,7 +311,7 @@ ApplicationWindow {
                     id:mainPage_LocationButton
                     text: "Location"
                     width: 80
-                    //anchors.left: mainPage_CalendarButton.left + mainPage_CalendarButton.width
+                    anchors.left: mainPage_CalendarButton.right
                     onClicked:
                     {
                         mainPage_iIndex = 3

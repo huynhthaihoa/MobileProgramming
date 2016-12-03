@@ -39,63 +39,111 @@
 ****************************************************************************/
 
 import QtQuick 2.6
+import QtQuick.Window 2.0
 import QtQuick.Controls 2.0
+import QtQuick.Dialogs 1.2
+import QtPositioning 5.5
+import QtLocation 5.6
 
-Flickable {
-    id: flickable
-    contentHeight: pane.height
-//    focus:true
-//    Keys.onReleased:
-//    {
-//        if(event.key === Qt.Key_Back)
-//        {
-//            event.accepted = true;
-//            mainPage_iIndex = 0;
-//            mainPage_Label.text = "Home"
-//            mainPage_StackView.pop();
-//        }
-//    }
-    readonly property int itemWidth: Math.max(button.implicitWidth, Math.min(button.implicitWidth * 2, pane.availableWidth / 3))
 
-    Pane {
-        id: pane
-        width: parent.width
-
-        Column {
-            id: column
-            spacing: 40
-            width: parent.width
-
-            Label {
-                width: parent.width
-                wrapMode: Label.Wrap
-                horizontalAlignment: Qt.AlignHCenter
-                text: "Button presents a push-button that can be pushed or clicked by the user. "
-                    + "Buttons are normally used to perform an action, or to answer a question."
-            }
-
-            Column {
-                spacing: 20
-                anchors.horizontalCenter: parent.horizontalCenter
-
-                Button {
-                    text: "First_4"
-                    width: itemWidth
-                }
-                Button {
-                    id: button
-                    text: "Second_4"
-                    width: itemWidth
-                    highlighted: true
-                }
-                Button {
-                    text: "Third_4"
-                    enabled: false
-                    width: itemWidth
-                }
+Item
+{
+        PositionSource
+        {
+            active:true
+            onPositionChanged:
+            {
+                console.log(position.coordinate)
             }
         }
-    }
+        Map
+        {
+            id: locationPage_Map
+            anchors.fill: parent
+            plugin: Plugin
+            {
+                name: "mapbox"
+                PluginParameter { name: "mapbox.access_token"; value: "pk.eyJ1IjoiaHV5bmh0aGFpaG9hIiwiYSI6ImNpdnpoN3BmNjAzYmQyem8xcTNhcWd0ZWgifQ.LIpLIt9lMU0UGM-nfaK4ww" }
+                PluginParameter { name: "mapbox.map_id"; value: "huynhthaihoa.27gah0ja" }
+            }
+            center
+            {
+                latitude: -27
+                longitude: 153
+            }
+            zoomLevel: locationPage_Map.minimumZoomLevel
+            gesture.enabled: true
+        }
+//        MouseArea
+//        {
+//            onWheel:
+//            {
+////                if (wheel.modifiers & Qt.ControlModifier)
+////                {
+////                    map.zoomLevel++
+////                }
+//            }
+//        }
 
-    ScrollIndicator.vertical: ScrollIndicator { }
-}
+}//Plugin
+//{
+
+//}
+//Flickable {
+//    id: flickable
+//    contentHeight: pane.height
+////    focus:true
+////    Keys.onReleased:
+////    {
+////        if(event.key === Qt.Key_Back)
+////        {
+////            event.accepted = true;
+////            mainPage_iIndex = 0;
+////            mainPage_Label.text = "Home"
+////            mainPage_StackView.pop();
+////        }
+////    }
+//    readonly property int itemWidth: Math.max(button.implicitWidth, Math.min(button.implicitWidth * 2, pane.availableWidth / 3))
+
+//    Pane {
+//        id: pane
+//        width: parent.width
+
+//        Column {
+//            id: column
+//            spacing: 40
+//            width: parent.width
+
+//            Label {
+//                width: parent.width
+//                wrapMode: Label.Wrap
+//                horizontalAlignment: Qt.AlignHCenter
+//                text: "Button presents a push-button that can be pushed or clicked by the user. "
+//                    + "Buttons are normally used to perform an action, or to answer a question."
+//            }
+
+//            Column {
+//                spacing: 20
+//                anchors.horizontalCenter: parent.horizontalCenter
+
+//                Button {
+//                    text: "First_4"
+//                    width: itemWidth
+//                }
+//                Button {
+//                    id: button
+//                    text: "Second_4"
+//                    width: itemWidth
+//                    highlighted: true
+//                }
+//                Button {
+//                    text: "Third_4"
+//                    enabled: false
+//                    width: itemWidth
+//                }
+//            }
+//        }
+//    }
+
+//    ScrollIndicator.vertical: ScrollIndicator { }
+//}

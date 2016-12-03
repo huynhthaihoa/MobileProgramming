@@ -34,5 +34,7 @@
         <file>pages/DiseasePage.qml</file>
         <file>pages/HealthNewsPage.qml</file>
         <file>pages/LocationPage.qml</file>
+        <file>pages/DiseaseDetailPage.qml</file>
+        <file>pages/TabPage.qml</file>
     </qresource>
 </RCC>

@@ -79,17 +79,17 @@ Flickable {
                 anchors.horizontalCenter: parent.horizontalCenter
 
                 Button {
-                    text: "First_1"
+                    text: "First_2"
                     width: itemWidth
                 }
                 Button {
                     id: button
-                    text: "Second_1"
+                    text: "Second_2"
                     width: itemWidth
                     highlighted: true
                 }
                 Button {
-                    text: "Third_1"
+                    text: "Third_2"
                     enabled: false
                     width: itemWidth
                 }

@@ -185,6 +185,7 @@ Makefile: Project.pro C:/Qt/5.7/mingw53_32/mkspecs/win32-g++/qmake.conf C:/Qt/5.
 		C:/Qt/5.7/mingw53_32/mkspecs/features/resources.prf \
 		C:/Qt/5.7/mingw53_32/mkspecs/features/moc.prf \
 		C:/Qt/5.7/mingw53_32/mkspecs/features/win32/opengl.prf \
+		C:/Qt/5.7/mingw53_32/mkspecs/features/uic.prf \
 		C:/Qt/5.7/mingw53_32/mkspecs/features/file_copies.prf \
 		C:/Qt/5.7/mingw53_32/mkspecs/features/win32/windows.prf \
 		C:/Qt/5.7/mingw53_32/mkspecs/features/testcase_targets.prf \
@@ -193,10 +194,14 @@ Makefile: Project.pro C:/Qt/5.7/mingw53_32/mkspecs/win32-g++/qmake.conf C:/Qt/5.
 		C:/Qt/5.7/mingw53_32/mkspecs/features/lex.prf \
 		Project.pro \
 		C:/Qt/5.7/mingw53_32/lib/qtmaind.prl \
+		C:/Qt/5.7/mingw53_32/lib/Qt5Location.prl \
 		C:/Qt/5.7/mingw53_32/lib/Qt5Quick.prl \
+		C:/Qt/5.7/mingw53_32/lib/Qt5Widgets.prl \
 		C:/Qt/5.7/mingw53_32/lib/Qt5Gui.prl \
 		C:/Qt/5.7/mingw53_32/lib/Qt5Qml.prl \
 		C:/Qt/5.7/mingw53_32/lib/Qt5Network.prl \
+		C:/Qt/5.7/mingw53_32/lib/Qt5Sql.prl \
+		C:/Qt/5.7/mingw53_32/lib/Qt5Positioning.prl \
 		C:/Qt/5.7/mingw53_32/lib/Qt5Core.prl
 	$(QMAKE) -spec win32-g++ "CONFIG+=debug" "CONFIG+=qml_debug" -o Makefile Project.pro
 C:/Qt/5.7/mingw53_32/mkspecs/features/spec_pre.prf:
@@ -325,6 +330,7 @@ C:/Qt/5.7/mingw53_32/mkspecs/features/qt.prf:
 C:/Qt/5.7/mingw53_32/mkspecs/features/resources.prf:
 C:/Qt/5.7/mingw53_32/mkspecs/features/moc.prf:
 C:/Qt/5.7/mingw53_32/mkspecs/features/win32/opengl.prf:
+C:/Qt/5.7/mingw53_32/mkspecs/features/uic.prf:
 C:/Qt/5.7/mingw53_32/mkspecs/features/file_copies.prf:
 C:/Qt/5.7/mingw53_32/mkspecs/features/win32/windows.prf:
 C:/Qt/5.7/mingw53_32/mkspecs/features/testcase_targets.prf:
@@ -333,10 +339,14 @@ C:/Qt/5.7/mingw53_32/mkspecs/features/yacc.prf:
 C:/Qt/5.7/mingw53_32/mkspecs/features/lex.prf:
 Project.pro:
 C:/Qt/5.7/mingw53_32/lib/qtmaind.prl:
+C:/Qt/5.7/mingw53_32/lib/Qt5Location.prl:
 C:/Qt/5.7/mingw53_32/lib/Qt5Quick.prl:
+C:/Qt/5.7/mingw53_32/lib/Qt5Widgets.prl:
 C:/Qt/5.7/mingw53_32/lib/Qt5Gui.prl:
 C:/Qt/5.7/mingw53_32/lib/Qt5Qml.prl:
 C:/Qt/5.7/mingw53_32/lib/Qt5Network.prl:
+C:/Qt/5.7/mingw53_32/lib/Qt5Sql.prl:
+C:/Qt/5.7/mingw53_32/lib/Qt5Positioning.prl:
 C:/Qt/5.7/mingw53_32/lib/Qt5Core.prl:
 qmake: FORCE
 	@$(QMAKE) -spec win32-g++ "CONFIG+=debug" "CONFIG+=qml_debug" -o Makefile Project.pro

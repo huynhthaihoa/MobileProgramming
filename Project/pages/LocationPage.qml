@@ -38,112 +38,638 @@
 **
 ****************************************************************************/
 
-import QtQuick 2.6
-import QtQuick.Window 2.0
-import QtQuick.Controls 2.0
-import QtQuick.Dialogs 1.2
-import QtPositioning 5.5
+import QtQuick 2.5
+import QtQuick.Controls 1.4
 import QtLocation 5.6
+import QtPositioning 5.5
+import "../helper.js" as Helper
 
 
 Item
 {
-        PositionSource
-        {
-            active:true
-            onPositionChanged:
-            {
-                console.log(position.coordinate)
-            }
-        }
-        Map
-        {
-            id: locationPage_Map
-            anchors.fill: parent
-            plugin: Plugin
-            {
-                name: "mapbox"
-                PluginParameter { name: "mapbox.access_token"; value: "pk.eyJ1IjoiaHV5bmh0aGFpaG9hIiwiYSI6ImNpdnpoN3BmNjAzYmQyem8xcTNhcWd0ZWgifQ.LIpLIt9lMU0UGM-nfaK4ww" }
-                PluginParameter { name: "mapbox.map_id"; value: "huynhthaihoa.27gah0ja" }
-            }
-            center
-            {
-                latitude: -27
-                longitude: 153
-            }
-            zoomLevel: locationPage_Map.minimumZoomLevel
-            gesture.enabled: true
-        }
-//        MouseArea
+//        PositionSource
 //        {
-//            onWheel:
+//            active:true
+//            onPositionChanged:
 //            {
-////                if (wheel.modifiers & Qt.ControlModifier)
-////                {
-////                    map.zoomLevel++
-////                }
+//                console.log(position.coordinate)
 //            }
 //        }
-
-}//Plugin
-//{
-
-//}
-//Flickable {
-//    id: flickable
-//    contentHeight: pane.height
-////    focus:true
-////    Keys.onReleased:
-////    {
-////        if(event.key === Qt.Key_Back)
-////        {
-////            event.accepted = true;
-////            mainPage_iIndex = 0;
-////            mainPage_Label.text = "Home"
-////            mainPage_StackView.pop();
-////        }
-////    }
-//    readonly property int itemWidth: Math.max(button.implicitWidth, Math.min(button.implicitWidth * 2, pane.availableWidth / 3))
-
-//    Pane {
-//        id: pane
-//        width: parent.width
-
-//        Column {
-//            id: column
-//            spacing: 40
-//            width: parent.width
-
-//            Label {
-//                width: parent.width
-//                wrapMode: Label.Wrap
-//                horizontalAlignment: Qt.AlignHCenter
-//                text: "Button presents a push-button that can be pushed or clicked by the user. "
-//                    + "Buttons are normally used to perform an action, or to answer a question."
+//        Map
+//        {
+//            id: locationPage_Map
+//            anchors.fill: parent
+//            plugin: Plugin
+//            {
+//                name: "mapbox"
+//                PluginParameter { name: "mapbox.access_token"; value: "pk.eyJ1IjoiaHV5bmh0aGFpaG9hIiwiYSI6ImNpdnpoN3BmNjAzYmQyem8xcTNhcWd0ZWgifQ.LIpLIt9lMU0UGM-nfaK4ww" }
+//                PluginParameter { name: "mapbox.map_id"; value: "huynhthaihoa.27gah0ja" }
 //            }
-
-//            Column {
-//                spacing: 20
-//                anchors.horizontalCenter: parent.horizontalCenter
-
-//                Button {
-//                    text: "First_4"
-//                    width: itemWidth
-//                }
-//                Button {
-//                    id: button
-//                    text: "Second_4"
-//                    width: itemWidth
-//                    highlighted: true
-//                }
-//                Button {
-//                    text: "Third_4"
-//                    enabled: false
-//                    width: itemWidth
-//                }
+//            center
+//            {
+//                latitude: 10.762622
+//                longitude: 106.660172
 //            }
+//            zoomLevel: locationPage_Map.minimumZoomLevel
+//            gesture.enabled: true
 //        }
-//    }
+    Map {
+        id: locationPage_Map
+    //! [top]
+        property variant markers
+        property variant mapItems
+        property int markerCounter: 0 // counter for total amount of markers. Resets to 0 when number of markers = 0
+        property int currentMarker
+        property int lastX : -1
+        property int lastY : -1
+        property int pressX : -1
+        property int pressY : -1
+        property int jitterThreshold : 30
+        property bool followme: false
+        property variant scaleLengths: [5, 10, 20, 50, 100, 200, 500, 1000, 2000, 5000, 10000, 20000, 50000, 100000, 200000, 500000, 1000000, 2000000]
+        property alias routeQuery: routeQuery
+        property alias routeModel: routeModel
+        property alias geocodeModel: geocodeModel
 
-//    ScrollIndicator.vertical: ScrollIndicator { }
-//}
+        signal showGeocodeInfo()
+        signal geocodeFinished()
+        signal routeError()
+        signal coordinatesCaptured(double latitude, double longitude)
+        signal showMainMenu(variant coordinate)
+        signal showMarkerMenu(variant coordinate)
+        signal showRouteMenu(variant coordinate)
+        signal showPointMenu(variant coordinate)
+        signal showRouteList()
+
+        function geocodeMessage()
+        {
+            var street, district, city, county, state, countryCode, country, postalCode, latitude, longitude, text
+            latitude = Math.round(geocodeModel.get(0).coordinate.latitude * 10000) / 10000
+            longitude =Math.round(geocodeModel.get(0).coordinate.longitude * 10000) / 10000
+            street = geocodeModel.get(0).address.street
+            district = geocodeModel.get(0).address.district
+            city = geocodeModel.get(0).address.city
+            county = geocodeModel.get(0).address.county
+            state = geocodeModel.get(0).address.state
+            countryCode = geocodeModel.get(0).address.countryCode
+            country = geocodeModel.get(0).address.country
+            postalCode = geocodeModel.get(0).address.postalCode
+
+            text = "<b>Latitude:</b> " + latitude + "<br/>"
+            text +="<b>Longitude:</b> " + longitude + "<br/>" + "<br/>"
+            if (street) text +="<b>Street: </b>"+ street + " <br/>"
+            if (district) text +="<b>District: </b>"+ district +" <br/>"
+            if (city) text +="<b>City: </b>"+ city + " <br/>"
+            if (county) text +="<b>County: </b>"+ county + " <br/>"
+            if (state) text +="<b>State: </b>"+ state + " <br/>"
+            if (countryCode) text +="<b>Country code: </b>"+ countryCode + " <br/>"
+            if (country) text +="<b>Country: </b>"+ country + " <br/>"
+            if (postalCode) text +="<b>PostalCode: </b>"+ postalCode + " <br/>"
+            return text
+        }
+
+        function calculateScale()
+        {
+            var coord1, coord2, dist, text, f
+            f = 0
+            coord1 = locationPage_Map.toCoordinate(Qt.point(0,scale.y))
+            coord2 = locationPage_Map.toCoordinate(Qt.point(0+scaleImage.sourceSize.width,scale.y))
+            dist = Math.round(coord1.distanceTo(coord2))
+
+            if (dist === 0) {
+                // not visible
+            } else {
+                for (var i = 0; i < scaleLengths.length-1; i++) {
+                    if (dist < (scaleLengths[i] + scaleLengths[i+1]) / 2 ) {
+                        f = scaleLengths[i] / dist
+                        dist = scaleLengths[i]
+                        break;
+                    }
+                }
+                if (f === 0) {
+                    f = dist / scaleLengths[i]
+                    dist = scaleLengths[i]
+                }
+            }
+
+            text = Helper.formatDistance(dist)
+            scaleImage.width = (scaleImage.sourceSize.width * f) - 2 * scaleImageLeft.sourceSize.width
+            scaleText.text = text
+        }
+
+        function deleteMarkers()
+        {
+            var count = locationPage_Map.markers.length
+            for (var i = 0; i<count; i++){
+                locationPage_Map.removeMapItem(map.markers[i])
+                locationPage_Map.markers[i].destroy()
+            }
+            locationPage_Map.markers = []
+            markerCounter = 0
+        }
+
+        function deleteMapItems()
+        {
+            var count = locationPage_Map.mapItems.length
+            for (var i = 0; i<count; i++){
+                locationPage_Map.removeMapItem(map.mapItems[i])
+                locationPage_Map.mapItems[i].destroy()
+            }
+            locationPage_Map.mapItems = []
+        }
+
+        function addMarker()
+        {
+            var count = locationPage_Map.markers.length
+            markerCounter++
+            var marker = Qt.createQmlObject ('Marker {}', map)
+            locationPage_Map.addMapItem(marker)
+            marker.z = map.z+1
+            marker.coordinate = mouseArea.lastCoordinate
+
+            //update list of markers
+            var myArray = new Array()
+            for (var i = 0; i<count; i++){
+                myArray.push(markers[i])
+            }
+            myArray.push(marker)
+            markers = myArray
+        }
+
+        function addGeoItem(item)
+        {
+            var count = locationPage_Map.mapItems.length
+            var co = Qt.createComponent(item+'.qml')
+            if (co.status === Component.Ready) {
+                var o = co.createObject(locationPage_Map)
+                o.setGeometry(locationPage_Map.markers, currentMarker)
+                map.addMapItem(o)
+                //update list of items
+                var myArray = new Array()
+                for (var i = 0; i<count; i++){
+                    myArray.push(mapItems[i])
+                }
+                myArray.push(o)
+                mapItems = myArray
+
+            } else {
+                console.log(item + " is not supported right now, please call us later.")
+            }
+        }
+
+        function deleteMarker(index)
+        {
+            //update list of markers
+            var myArray = new Array()
+            var count = map.markers.length
+            for (var i = 0; i<count; i++){
+                if (index !== i) myArray.push(locationPage_Map.markers[i])
+            }
+
+            locationPage_Map.removeMapItem(map.markers[index])
+            locationPage_Map.markers[index].destroy()
+            locationPage_Map.markers = myArray
+            if (markers.length === 0) markerCounter = 0
+        }
+
+        function calculateMarkerRoute()
+        {
+            routeQuery.clearWaypoints();
+            for (var i = currentMarker; i< locationPage_Map.markers.length; i++){
+                routeQuery.addWaypoint(markers[i].coordinate)
+            }
+            routeQuery.travelModes = RouteQuery.CarTravel
+            routeQuery.routeOptimizations = RouteQuery.ShortestRoute
+            routeQuery.setFeatureWeight(0, 0)
+            routeModel.update();
+        }
+
+        function calculateCoordinateRoute(startCoordinate, endCoordinate)
+        {
+            //! [routerequest0]
+            // clear away any old data in the query
+            routeQuery.clearWaypoints();
+
+            // add the start and end coords as waypoints on the route
+            routeQuery.addWaypoint(startCoordinate)
+            routeQuery.addWaypoint(endCoordinate)
+            routeQuery.travelModes = RouteQuery.CarTravel
+            routeQuery.routeOptimizations = RouteQuery.FastestRoute
+
+            //! [routerequest0]
+
+            //! [routerequest0 feature weight]
+            for (var i=0; i<9; i++) {
+                routeQuery.setFeatureWeight(i, 0)
+            }
+            //for (var i=0; i<routeDialog.features.length; i++) {
+            //    map.routeQuery.setFeatureWeight(routeDialog.features[i], RouteQuery.AvoidFeatureWeight)
+            //}
+            //! [routerequest0 feature weight]
+
+            //! [routerequest1]
+            routeModel.update();
+
+            //! [routerequest1]
+            //! [routerequest2]
+            // center the map on the start coord
+            locationPage_Map.center = startCoordinate;
+            //! [routerequest2]
+        }
+
+        function geocode(fromAddress)
+        {
+            //! [geocode1]
+            // send the geocode request
+            geocodeModel.query = fromAddress
+            geocodeModel.update()
+            //! [geocode1]
+        }
+
+        plugin: Plugin
+        {
+            name: "mapbox"
+            PluginParameter { name: "mapbox.access_token"; value: "pk.eyJ1IjoiaHV5bmh0aGFpaG9hIiwiYSI6ImNpdnpoN3BmNjAzYmQyem8xcTNhcWd0ZWgifQ.LIpLIt9lMU0UGM-nfaK4ww" }
+            PluginParameter { name: "mapbox.map_id"; value: "huynhthaihoa.27gah0ja" }
+        }
+    //! [coord]
+        zoomLevel: (maximumZoomLevel - minimumZoomLevel)/2
+        center {
+            // The Qt Company in Oslo
+            latitude: 59.9485
+            longitude: 10.7686
+        }
+    //! [coord]
+
+    //! [mapnavigation]
+        // Enable pan, flick, and pinch gestures to zoom in and out
+        gesture.acceptedGestures: MapGestureArea.PanGesture | MapGestureArea.FlickGesture | MapGestureArea.PinchGesture
+        gesture.flickDeceleration: 3000
+        gesture.enabled: true
+    //! [mapnavigation]
+        focus: true
+        onCopyrightLinkActivated: Qt.openUrlExternally(link)
+
+        onCenterChanged:{
+            scaleTimer.restart()
+            if (locationPage_Map.followme)
+                if (locationPage_Map.center !== positionSource.position.coordinate) locationPage_Map.followme = false
+        }
+
+        onZoomLevelChanged:{
+            scaleTimer.restart()
+            if (locationPage_Map.followme) locationPage_Map.center = positionSource.position.coordinate
+        }
+
+        onWidthChanged:{
+            scaleTimer.restart()
+        }
+
+        onHeightChanged:{
+            scaleTimer.restart()
+        }
+
+        Component.onCompleted: {
+            markers = new Array();
+            mapItems = new Array();
+        }
+
+        Keys.onPressed: {
+            if (event.key === Qt.Key_Plus) {
+                locationPage_Map.zoomLevel++;
+            } else if (event.key === Qt.Key_Minus) {
+                locationPage_Map.zoomLevel--;
+            } else if (event.key === Qt.Key_Left || event.key === Qt.Key_Right ||
+                       event.key === Qt.Key_Up   || event.key === Qt.Key_Down) {
+                var dx = 0;
+                var dy = 0;
+
+                switch (event.key) {
+
+                case Qt.Key_Left: dx = locationPage_Map.width / 4; break;
+                case Qt.Key_Right: dx = -locationPage_Map.width / 4; break;
+                case Qt.Key_Up: dy = locationPage_Map.height / 4; break;
+                case Qt.Key_Down: dy = -locationPage_Map.height / 4; break;
+
+                }
+
+                var mapCenterPoint = Qt.point(locationPage_Map.width / 2.0 - dx, locationPage_Map.height / 2.0 - dy);
+                locationPage_Map.center = locationPage_Map.toCoordinate(mapCenterPoint);
+            }
+        }
+
+        /* @todo
+        Binding {
+            target: map
+            property: 'center'
+            value: positionSource.position.coordinate
+            when: followme
+        }*/
+
+        PositionSource{
+            id: positionSource
+            active: locationPage_Map.followme
+
+            onPositionChanged: {
+                locationPage_Map.center = positionSource.position.coordinate
+            }
+        }
+
+        MapQuickItem {
+            id: poiTheQtComapny
+            sourceItem: Rectangle { width: 14; height: 14; color: "#e41e25"; border.width: 2; border.color: "white"; smooth: true; radius: 7 }
+            coordinate {
+                latitude: 10.762622
+                longitude: 106.660172
+            }
+            opacity: 1.0
+            anchorPoint: Qt.point(sourceItem.width/2, sourceItem.height/2)
+        }
+
+        MapQuickItem {
+            sourceItem: Text{
+                text: "Ho Chi Minh City"
+                color:"#242424"
+                font.bold: true
+                styleColor: "#ECECEC"
+                style: Text.Outline
+            }
+            coordinate: poiTheQtComapny.coordinate
+            anchorPoint: Qt.point(-poiTheQtComapny.sourceItem.width * 0.5,poiTheQtComapny.sourceItem.height * 1.5)
+        }
+
+
+        Slider {
+            id: zoomSlider;
+            z: locationPage_Map.z + 3
+            minimumValue: locationPage_Map.minimumZoomLevel;
+            maximumValue: locationPage_Map.maximumZoomLevel;
+            anchors.margins: 10
+            anchors.bottom: scale.top
+            anchors.top: parent.top
+            anchors.right: parent.right
+            orientation : Qt.Vertical
+            value: locationPage_Map.zoomLevel
+            onValueChanged: {
+                locationPage_Map.zoomLevel = value
+            }
+        }
+
+        Item {
+            id: scale
+            z: locationPage_Map.z + 3
+            visible: scaleText.text != "0 m"
+            anchors.bottom: parent.bottom;
+            anchors.right: parent.right
+            anchors.margins: 20
+            height: scaleText.height * 2
+            width: scaleImage.width
+
+            Image {
+                id: scaleImageLeft
+                source: "../images/scale_end.png"
+                anchors.bottom: parent.bottom
+                anchors.right: scaleImage.left
+            }
+            Image {
+                id: scaleImage
+                source: "../images/scale.png"
+                anchors.bottom: parent.bottom
+                anchors.right: scaleImageRight.left
+            }
+            Image {
+                id: scaleImageRight
+                source: "../images/scale_end.png"
+                anchors.bottom: parent.bottom
+                anchors.right: parent.right
+            }
+            Label {
+                id: scaleText
+                color: "#004EAE"
+                anchors.centerIn: parent
+                text: "0 m"
+            }
+            Component.onCompleted: {
+                locationPage_Map.calculateScale();
+            }
+        }
+
+        //! [routemodel0]
+        RouteModel {
+            id: routeModel
+            plugin : locationPage_Map.plugin
+            query:  RouteQuery {
+                id: routeQuery
+            }
+            onStatusChanged: {
+                if (status == RouteModel.Ready) {
+                    switch (count) {
+                    case 0:
+                        // technically not an error
+                        locationPage_Map.routeError()
+                        break
+                    case 1:
+                        locationPage_Map.showRouteList()
+                        break
+                    }
+                } else if (status == RouteModel.Error) {
+                    locationPage_Map.routeError()
+                }
+            }
+        }
+        //! [routemodel0]
+
+        //! [routedelegate0]
+        Component {
+            id: routeDelegate
+
+            MapRoute {
+                id: route
+                route: routeData
+                line.color: "#46a2da"
+                line.width: 5
+                smooth: true
+                opacity: 0.8
+         //! [routedelegate0]
+                MouseArea {
+                    id: routeMouseArea
+                    anchors.fill: parent
+                    hoverEnabled: false
+                    property variant lastCoordinate
+
+                    onPressed : {
+                        locationPage_Map.lastX = mouse.x + parent.x
+                        locationPage_Map.lastY = mouse.y + parent.y
+                        locationPage_Map.pressX = mouse.x + parent.x
+                        locationPage_Map.pressY = mouse.y + parent.y
+                        lastCoordinate = map.toCoordinate(Qt.point(mouse.x, mouse.y))
+                    }
+
+                    onPositionChanged: {
+                        if (mouse.button === Qt.LeftButton) {
+                            locationPage_Map.lastX = mouse.x + parent.x
+                            locationPage_Map.lastY = mouse.y + parent.y
+                        }
+                    }
+
+                    onPressAndHold:{
+                        if (Math.abs(locationPage_Map.pressX - parent.x- mouse.x ) < locationPage_Map.jitterThreshold
+                                && Math.abs(locationPage_Map.pressY - parent.y - mouse.y ) < locationPage_Map.jitterThreshold) {
+                            showRouteMenu(lastCoordinate);
+                        }
+                    }
+
+                }
+        //! [routedelegate1]
+            }
+        }
+        //! [routedelegate1]
+
+        //! [geocodemodel0]
+        GeocodeModel {
+            id: geocodeModel
+            plugin: locationPage_Map.plugin
+            onStatusChanged: {
+                if ((status == GeocodeModel.Ready) || (status == GeocodeModel.Error))
+                    locationPage_Map.geocodeFinished()
+            }
+            onLocationsChanged:
+            {
+                if (count == 1) {
+                    locationPage_Map.center.latitude = get(0).coordinate.latitude
+                    locationPage_Map.center.longitude = get(0).coordinate.longitude
+                }
+            }
+        }
+        //! [geocodemodel0]
+
+        //! [pointdel0]
+        Component {
+            id: pointDelegate
+
+            MapCircle {
+                id: point
+                radius: 1000
+                color: "#46a2da"
+                border.color: "#190a33"
+                border.width: 2
+                smooth: true
+                opacity: 0.25
+                center: locationData.coordinate
+                //! [pointdel0]
+                MouseArea {
+                    anchors.fill:parent
+                    id: circleMouseArea
+                    hoverEnabled: false
+                    property variant lastCoordinate
+
+                    onPressed : {
+                        locationPage_Map.lastX = mouse.x + parent.x
+                        locationPage_Map.lastY = mouse.y + parent.y
+                        locationPage_Map.pressX = mouse.x + parent.x
+                        locationPage_Map.pressY = mouse.y + parent.y
+                        lastCoordinate = map.toCoordinate(Qt.point(mouse.x, mouse.y))
+                    }
+
+                    onPositionChanged: {
+                        if (Math.abs(locationPage_Map.pressX - parent.x- mouse.x ) > locationPage_Map.jitterThreshold ||
+                                Math.abs(locationPage_Map.pressY - parent.y -mouse.y ) > locationPage_Map.jitterThreshold) {
+                            if (pressed) parent.radius = parent.center.distanceTo(
+                                             locationPage_Map.toCoordinate(Qt.point(mouse.x, mouse.y)))
+                        }
+                        if (mouse.button === Qt.LeftButton) {
+                            locationPage_Map.lastX = mouse.x + parent.x
+                            locationPage_Map.lastY = mouse.y + parent.y
+                        }
+                    }
+
+                    onPressAndHold:{
+                        if (Math.abs(locationPage_Map.pressX - parent.x- mouse.x ) < locationPage_Map.jitterThreshold
+                                && Math.abs(locationPage_Map.pressY - parent.y - mouse.y ) < locationPage_Map.jitterThreshold) {
+                            showPointMenu(lastCoordinate);
+                        }
+                    }
+                }
+        //! [pointdel1]
+            }
+        }
+        //! [pointdel1]
+
+        //! [routeview0]
+        MapItemView {
+            model: routeModel
+            delegate: routeDelegate
+        //! [routeview0]
+            autoFitViewport: true
+        //! [routeview1]
+        }
+        //! [routeview1]
+
+        //! [geocodeview]
+        MapItemView {
+            model: geocodeModel
+            delegate: pointDelegate
+        }
+        //! [geocodeview]
+
+        Timer {
+            id: scaleTimer
+            interval: 100
+            running: false
+            repeat: false
+            onTriggered: {
+                locationPage_Map.calculateScale()
+            }
+        }
+
+        MouseArea {
+            id: mouseArea
+            property variant lastCoordinate
+            anchors.fill: parent
+            acceptedButtons: Qt.LeftButton | Qt.RightButton
+
+            onPressed : {
+                locationPage_Map.lastX = mouse.x
+                locationPage_Map.lastY = mouse.y
+                locationPage_Map.pressX = mouse.x
+                locationPage_Map.pressY = mouse.y
+                lastCoordinate = map.toCoordinate(Qt.point(mouse.x, mouse.y))
+            }
+
+            onPositionChanged: {
+                if (mouse.button === Qt.LeftButton) {
+                    locationPage_Map.lastX = mouse.x
+                    locationPage_Map.lastY = mouse.y
+                }
+            }
+
+            onDoubleClicked: {
+                var mouseGeoPos = locationPage_Map.toCoordinate(Qt.point(mouse.x, mouse.y));
+                var preZoomPoint = locationPage_Map.fromCoordinate(mouseGeoPos, false);
+                if (mouse.button === Qt.LeftButton) {
+                    locationPage_Map.zoomLevel++;
+                } else if (mouse.button === Qt.RightButton) {
+                    locationPage_Map.zoomLevel--;
+                }
+                var postZoomPoint = locationPage_Map.fromCoordinate(mouseGeoPos, false);
+                var dx = postZoomPoint.x - preZoomPoint.x;
+                var dy = postZoomPoint.y - preZoomPoint.y;
+
+                var mapCenterPoint = Qt.point(map.width / 2.0 + dx, locationPage_Map.height / 2.0 + dy);
+                locationPage_Map.center = locationPage_Map.toCoordinate(mapCenterPoint);
+
+                lastX = -1;
+                lastY = -1;
+            }
+
+            onPressAndHold:{
+                if (Math.abs(locationPage_Map.pressX - mouse.x ) < locationPage_Map.jitterThreshold
+                        && Math.abs(locationPage_Map.pressY - mouse.y ) < locationPage_Map.jitterThreshold) {
+                    showMainMenu(lastCoordinate);
+                }
+            }
+        }
+    //! [end]
+    }
+
+}

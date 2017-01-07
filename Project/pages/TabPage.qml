@@ -16,7 +16,7 @@ TabView {
 
         insertTab("Tab 4",mainPage_ListModel.get(1).title, Qt.createComponent("DiseasePage.qml"))
     }
-    currentIndex: mainPage_iIndex
+    //currentIndex: mainPage_iIndex
     style: TabViewStyle {
 
            frameOverlap: 1

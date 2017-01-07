@@ -52,7 +52,9 @@ ApplicationWindow
     width: 360
     height: 520
     title: qsTr("My ICares")
-    property int mainPage_iIndex: 0
+  //  property int mainPage_iIndex: 0
+    property variant mainPage_aNameList: ["Home"]
+    property bool mainPage_bIsOpenNewPage: false
     header: ToolBar
     {
         id:mainPage_ToolbarStart
@@ -74,12 +76,22 @@ ApplicationWindow
             Label
             {
                 id: mainPage_Label
-                text: "ICARES"
+                text: "Trang chủ"
                 font.pixelSize: 20
-                elide: Label.ElideRight
-                horizontalAlignment: Qt.AlignHCenter
-                verticalAlignment: Qt.AlignVCenter
+                elide: Text.ElideMiddle
+                anchors.horizontalCenter: parent.horizontalCenter
+                horizontalAlignment: Text.AlignHCenter
+                verticalAlignment: Text.AlignVCenter
                 Layout.fillWidth: true
+                onTextChanged:
+                {
+                    if(mainPage_bIsOpenNewPage == true)
+                    {
+                        mainPage_aNameList.push(mainPage_Label.text)
+                        mainPage_bIsOpenNewPage = false
+                    }
+                    //console.log(mainPage_aNameList[mainPage_aNameList.length - 1] + ";" + mainPage_aNameList.length)
+                }
             }
 
 //            ToolButton
@@ -133,10 +145,12 @@ ApplicationWindow
                 onClicked:
                 {
                     mainPage_ListView.currentIndex = index
+                    if(mainPage_ListView.currentIndex == 0)
+                    {
+                        mainPage_Label.text = "Home"
+                        mainPage_StackView.push("qrc:/MainPage.qml")
+                    }
                     doOpenPage(mainPage_ListView.currentIndex - 1)
-//                   mainPage_Label.text = model.title
-//                   mainPage_StackView.push(model.source)
-//   //                mainPage_iIndex = mainPage_ListView.currentIndex
                      mainPage_Drawer.close()
                 }
                 Keys.onReleased:
@@ -145,7 +159,9 @@ ApplicationWindow
                     {
                         event.accepted = true
         //                mainPage_iIndex = 0
-                        mainPage_Label.text = "Home"
+                        mainPage_bIsOpenNewPage = false
+                        mainPage_aNameList.pop()
+                        mainPage_Label.text = mainPage_aNameList[mainPage_aNameList.length - 1]
                         mainPage_StackView.pop()
                     }
                 }
@@ -173,7 +189,9 @@ ApplicationWindow
             {
                 event.accepted = true
 //                mainPage_iIndex = 0
-                mainPage_Label.text = "Home"
+                mainPage_bIsOpenNewPage = false
+                mainPage_aNameList.pop()
+                mainPage_Label.text = mainPage_aNameList[mainPage_aNameList.length - 1]
                 mainPage_StackView.pop()
             }
         }
@@ -191,9 +209,9 @@ ApplicationWindow
             }
 
             Label {
-                text: "Click to any button to go to correlative page"
-                anchors.margins: 20
-                anchors.top: mainPage_LogoImage.bottom
+                text: "Nhấn nút để chuyển đến trang tương ứng"
+            anchors.margins: 20
+            anchors.top: mainPage_LogoImage.bottom
                 anchors.left: parent.left
                 anchors.right: parent.right
                 anchors.bottom: mainPage_ArrowImage.top
@@ -203,63 +221,45 @@ ApplicationWindow
             }
             Row
             {
+                anchors.fill: parent
                 Button
                 {
                     id: mainPage_DiseaseButton
-                    text: "Diseases"
-                    width: 80
-                    onClicked:
+                    text: "Bệnh"
+                width: parent.width / 4
+                onClicked:
                     {
                         doOpenPage(0)
-  //                      mainPage_iIndex = 0
-//                        mainPage_Label.text = text
-//                        mainPage_StackView.push("qrc:/pages/DiseasePage.qml")
                     }
                 }
                 Button
                 {
                     id:mainPage_HealthNewsButton
-                    text: "Health News"
-                    width: 80
-
-                    onClicked:
+                    text: "Tin tức"
+                width: parent.width / 4
+                onClicked:
                     {
                         doOpenPage(1)
-
-    //                    mainPage_iIndex = 1
-//                        mainPage_Label.text = text
-//                        mainPage_StackView.push("qrc:/pages/HealthNewsPage.qml")
                     }
                 }
                 Button
                 {
                     id:mainPage_CalendarButton
-                    text: "Calendar"
-                    width: 80
-       //             anchors.left:mainPage_HealthNewsButton.right
-                    onClicked:
+                    text: "Lịch"
+                width: parent.width / 4
+                onClicked:
                     {
                         doOpenPage(2)
-
-      //                  mainPage_iIndex = 2
-   //                     mainPage_Label.text = text
-    //                    mainPage_StackView.push("qrc:/pages/CalendarPage.qml")
                     }
                 }
                 Button
                 {
                     id:mainPage_LocationButton
-                    text: "Location"
-                    width: 80
-       //             anchors.left: mainPage_CalendarButton.right
+                    text: "Địa điểm"
+                    width: parent.width / 4
                     onClicked:
                     {
                         doOpenPage(3)
-//                          mainPage_iIndex = 3
-//                     //     mainPage_Label.text = text
-//                          mainPage_StackView.push("qrc:/pages/TabPage.qml")
-////                        mainPage_Label.text = text
-//                        mainPage_StackView.push("qrc:/pages/LocationPage.qml")
                     }
                 }
             }
@@ -271,20 +271,13 @@ ApplicationWindow
                 anchors.bottom: parent.bottom
             }
         }
-
-//        function doOpenPage(title,source)
-//        {
-//            mainPage_Label.text = model.title
-//            mainPage_StackView.push(model.source)
-////                mainPage_iIndex = mainPage_ListView.currentIndex
-//            mainPage_Drawer.close()
-//        }
     }
     function doOpenPage(the_index)
     {
+        mainPage_bIsOpenNewPage = true
         if(the_index === 0)
             mainPage_Label.text = "Diseases"
-        mainPage_iIndex = the_index
+        //mainPage_iIndex = the_index
         mainPage_StackView.push("qrc:/pages/TabPage.qml")
     }
 }

@@ -198,9 +198,9 @@ Makefile: Project.pro C:/Qt/5.7/mingw53_32/mkspecs/win32-g++/qmake.conf C:/Qt/5.
 		C:/Qt/5.7/mingw53_32/lib/Qt5Quick.prl \
 		C:/Qt/5.7/mingw53_32/lib/Qt5Widgets.prl \
 		C:/Qt/5.7/mingw53_32/lib/Qt5Gui.prl \
+		C:/Qt/5.7/mingw53_32/lib/Qt5Sql.prl \
 		C:/Qt/5.7/mingw53_32/lib/Qt5Qml.prl \
 		C:/Qt/5.7/mingw53_32/lib/Qt5Network.prl \
-		C:/Qt/5.7/mingw53_32/lib/Qt5Sql.prl \
 		C:/Qt/5.7/mingw53_32/lib/Qt5Positioning.prl \
 		C:/Qt/5.7/mingw53_32/lib/Qt5Core.prl
 	$(QMAKE) -spec win32-g++ "CONFIG+=debug" "CONFIG+=qml_debug" -o Makefile Project.pro
@@ -343,9 +343,9 @@ C:/Qt/5.7/mingw53_32/lib/Qt5Location.prl:
 C:/Qt/5.7/mingw53_32/lib/Qt5Quick.prl:
 C:/Qt/5.7/mingw53_32/lib/Qt5Widgets.prl:
 C:/Qt/5.7/mingw53_32/lib/Qt5Gui.prl:
+C:/Qt/5.7/mingw53_32/lib/Qt5Sql.prl:
 C:/Qt/5.7/mingw53_32/lib/Qt5Qml.prl:
 C:/Qt/5.7/mingw53_32/lib/Qt5Network.prl:
-C:/Qt/5.7/mingw53_32/lib/Qt5Sql.prl:
 C:/Qt/5.7/mingw53_32/lib/Qt5Positioning.prl:
 C:/Qt/5.7/mingw53_32/lib/Qt5Core.prl:
 qmake: FORCE

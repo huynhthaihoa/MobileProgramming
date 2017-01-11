@@ -4,8 +4,6 @@ import QtQuick.Controls.Styles 1.4
 
 TabView {
     id:tabPage
-  //  anchors.fill:parent
-  //  anchors.margins: 3
     Component.onCompleted:
     {
         insertTab("Tab 1",mainPage_ListModel.get(4).title, Qt.createComponent("LocationPage.qml"))
@@ -16,16 +14,18 @@ TabView {
 
         insertTab("Tab 4",mainPage_ListModel.get(1).title, Qt.createComponent("DiseasePage.qml"))
     }
-    //currentIndex: mainPage_iIndex
+    currentIndex: mainPage_iIndex
     style: TabViewStyle {
 
            frameOverlap: 1
+           //tabsMovable : true
            tab: Rectangle {
-               color: styleData.selected ? "#34CC19" :"limegreen"
+               color: styleData.selected ? "#3F493D" :"limegreen"
                border.color:  "limegreen"
                implicitWidth: tabPage.width / 4
                implicitHeight: 40
                radius: 2
+
                Text {
                    id: mytext
                    anchors.centerIn: parent

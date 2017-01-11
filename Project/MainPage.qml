@@ -38,34 +38,48 @@
 **
 ****************************************************************************/
 
-import QtQuick 2.6
+import QtQuick 2.0
 import QtQuick.Layouts 1.3
-import QtQuick.Controls 2.0
 //import QtQuick.Controls.Material 2.0
 //import QtQuick.Controls.Universal 2.0
 import Qt.labs.settings 1.0
-
+import QtQuick.Controls.Styles 1.4
+import QtQuick.Controls 1.4
+import QtQuick.Controls 2.0
 ApplicationWindow
 {
     id: mainPage_ApplicationWindow
     visible: true
     width: 360
-    height: 520
+    height: 640
     title: qsTr("My ICares")
-  //  property int mainPage_iIndex: 0
+    property int mainPage_iIndex: 0
     property variant mainPage_aNameList: ["Home"]
     property bool mainPage_bIsOpenNewPage: false
+    color: "limegreen"
     header: ToolBar
     {
-        id:mainPage_ToolbarStart
-        RowLayout
-        {
-            spacing: 20
+    id:mainPage_ToolbarStart
+
+    RowLayout
+    {
+        id: layout
+        anchors.rightMargin: 0
+        anchors.bottomMargin: 0
+        anchors.leftMargin: 0
+        anchors.topMargin: 0
+        spacing: 20
+        anchors.fill: parent
+        Rectangle {
             anchors.fill: parent
+            color: "transparent"
             ToolButton
             {
+                spacing: -1
                 contentItem: Image
+
                 {
+                    //anchors.centerIn : parent
                     fillMode: Image.Pad
                     horizontalAlignment: Image.AlignHCenter
                     verticalAlignment: Image.AlignVCenter
@@ -73,13 +87,22 @@ ApplicationWindow
                 }
                 onClicked: mainPage_Drawer.open()
             }
+
             Label
             {
                 id: mainPage_Label
                 text: "Trang chủ"
-                font.pixelSize: 20
+                rightPadding: -1
+                leftPadding: -1
+                topPadding: -1
+                font.bold: true
+                font.family: "Times New Roman"
+                clip: true
+                color: "black"
+                font.pixelSize: 21
                 elide: Text.ElideMiddle
-                anchors.horizontalCenter: parent.horizontalCenter
+                anchors.centerIn: parent
+                //anchors.horizontalCenter: parent.horizontalCenter
                 horizontalAlignment: Text.AlignHCenter
                 verticalAlignment: Text.AlignVCenter
                 Layout.fillWidth: true
@@ -90,67 +113,45 @@ ApplicationWindow
                         mainPage_aNameList.push(mainPage_Label.text)
                         mainPage_bIsOpenNewPage = false
                     }
-                    //console.log(mainPage_aNameList[mainPage_aNameList.length - 1] + ";" + mainPage_aNameList.length)
+
                 }
-            }
-
-//            ToolButton
-//            {
-//                contentItem: Image
-//                {
-//                    fillMode: Image.Pad
-//                    horizontalAlignment: Image.AlignHCenter
-//                    verticalAlignment: Image.AlignVCenter
-//                    source: "qrc:/images/menu.png"
-//                }
-//                onClicked: mainPage_Menu.open()
-//                Menu
-//                {
-//                    id: mainPage_Menu
-//                    x: parent.width - width
-//                    transformOrigin: Menu.TopRight
-//                    MenuItem
-//                    {
-//                        text: "Settings"
-//                        onTriggered: settingsPopup.open()
-//                    }
-//                    MenuItem
-//                    {
-//                        text: "About"
-//                        onTriggered: aboutDialog.open()
-//                    }
-//                }
-//            }
-
         }
     }
 
+        }
+    }
     Drawer
     {
         id: mainPage_Drawer
+
         width: Math.min(mainPage_ApplicationWindow.width, mainPage_ApplicationWindow.height) / 3 * 2
         height: mainPage_ApplicationWindow.height
-
         ListView
         {
             id: mainPage_ListView
             currentIndex: 0
             anchors.fill: parent
-
             delegate: ItemDelegate
             {
                 width: parent.width
                 text: model.title
+                font.bold : true
+                font.pixelSize : 15
                 highlighted: ListView.isCurrentItem
+
                 onClicked:
                 {
+
                     mainPage_ListView.currentIndex = index
                     if(mainPage_ListView.currentIndex == 0)
                     {
-                        mainPage_Label.text = "Home"
-                        mainPage_StackView.push("qrc:/MainPage.qml")
+                        mainPage_StackView.pop(null)
+                        mainPage_Label.text = "Trang chủ"
                     }
-                    doOpenPage(mainPage_ListView.currentIndex - 1)
+                    else
+                    {
+                        doOpenPage(mainPage_ListView.currentIndex - 1)
+                    }
                      mainPage_Drawer.close()
                 }
                 Keys.onReleased:
@@ -158,7 +159,7 @@ ApplicationWindow
                     if(event.key === Qt.Key_Back)
                     {
                         event.accepted = true
-        //                mainPage_iIndex = 0
+                        mainPage_iIndex = 0
                         mainPage_bIsOpenNewPage = false
                         mainPage_aNameList.pop()
                         mainPage_Label.text = mainPage_aNameList[mainPage_aNameList.length - 1]
@@ -170,25 +171,30 @@ ApplicationWindow
             model: ListModel
             {
                 id:mainPage_ListModel
-                ListElement {title: "Home"; source: "qrc:/MainPage.qml"}
-                ListElement {title: "Diseases"; source: "qrc:/pages/DiseasePage.qml"}
-                ListElement {title:"Health News"; source: "qrc:/pages/HealthNewsPage.qml"}
-                ListElement {title:"Calendar"; source:"qrc:/pages/CalendarPage.qml"}
-                ListElement {title:"Location"; source:"qrc:/pages/LocationPage.qml"}
+                ListElement {title: "Trang chủ"; source: "qrc:/MainPage.qml"}
+                ListElement {title: "Tra cứu"; source: "qrc:/pages/DiseasePage.qml"}
+                ListElement {title:"Tin tức"; source: "qrc:/pages/HealthNewsPage.qml"}
+                ListElement {title:"Lịch"; source:"qrc:/pages/CalendarPage.qml"}
+                ListElement {title:"Địa điểm"; source:"qrc:/pages/LocationPage.qml"}
             }
             ScrollIndicator.vertical: ScrollIndicator { }
         }
     }
     StackView
     {
-        id: mainPage_StackView
-        anchors.fill: parent
+    id: mainPage_StackView
+    anchors.rightMargin: 0
+    anchors.bottomMargin: 0
+    anchors.leftMargin: 0
+    anchors.topMargin: 0
+    anchors.fill: parent
+    focus: true
         Keys.onReleased:
         {
             if(event.key === Qt.Key_Back)
             {
                 event.accepted = true
-//                mainPage_iIndex = 0
+                mainPage_iIndex = 0
                 mainPage_bIsOpenNewPage = false
                 mainPage_aNameList.pop()
                 mainPage_Label.text = mainPage_aNameList[mainPage_aNameList.length - 1]
@@ -197,36 +203,62 @@ ApplicationWindow
         }
         initialItem: Pane {
             id: mainPage_Pane
+        Image {
+            id: logo
+            width: parent.width
+            height: parent.height / 3
+            source: "qrc:/images/2-Eyecare-Logo.jpg"
+        }
+        Row
+        {
+            anchors.rightMargin: 0
+            anchors.bottomMargin: 0
+            anchors.leftMargin: 0
+            anchors.topMargin: 0
+            spacing: 20
+            anchors.fill: parent
 
-            Image {
-                id: mainPage_LogoImage
-                width: mainPage_Pane.availableWidth / 2
-                height: mainPage_Pane.availableHeight / 2
-                anchors.centerIn: parent
-                anchors.verticalCenterOffset: -50
-                fillMode: Image.PreserveAspectFit
-                source: "qrc:/images/qt-logo.png"
-            }
-
-            Label {
-                text: "Nhấn nút để chuyển đến trang tương ứng"
-            anchors.margins: 20
-            anchors.top: mainPage_LogoImage.bottom
-                anchors.left: parent.left
-                anchors.right: parent.right
-                anchors.bottom: mainPage_ArrowImage.top
-                horizontalAlignment: Label.AlignHCenter
-                verticalAlignment: Label.AlignVCenter
-                wrapMode: Label.Wrap
-            }
-            Row
-            {
-                anchors.fill: parent
                 Button
                 {
                     id: mainPage_DiseaseButton
-                    text: "Bệnh"
-                width: parent.width / 4
+                    y : parent.height/3
+                     width: parent.width / 5
+                     height: parent.height / 8
+                    //spacing: 20
+
+                anchors.leftMargin: 40
+
+                background : Rectangle {
+                    //width: parent.width
+                    anchors.fill : parent
+                    color: "white"
+                    radius: 10
+
+                    //border.color: "#dfdfdf"
+                    Image {
+                        anchors.top: parent.top
+                        id: tracuu
+                        source: "images/index.png"
+                        BorderImage {
+                            id: xx
+                            source: "images/search.png"
+                            width: parent.width; height: parent.height
+                        }
+                    }
+                    Text {
+                            anchors.bottom: parent.bottom
+                            //anchors.centerIn: parent.Center
+                            text: "Tra cứu"
+                            color: "black"
+                            font.family: "Arial"
+                            font.bold: true
+                            font.pixelSize: 15
+                        verticalAlignment: Text.AlignVCenter
+                        horizontalAlignment: Text.AlignHCenter
+
+                        }
+                    }
+
                 onClicked:
                     {
                         doOpenPage(0)
@@ -235,9 +267,43 @@ ApplicationWindow
                 Button
                 {
                     id:mainPage_HealthNewsButton
-                    text: "Tin tức"
-                width: parent.width / 4
-                onClicked:
+                     y : parent.height/3
+                    height: parent.height / 8
+
+                background : Rectangle {
+                    //width: parent.width
+                    anchors.fill : parent
+                    color: "white"
+                    radius: 10
+
+                    //border.color: "#dfdfdf"
+                    Image {
+                        anchors.top: parent.top
+                        id: tintuc
+                        source: "images/index.png"
+                        BorderImage {
+                            id: xxx
+                            source: "images/news.png"
+                            width: parent.width; height: parent.height
+                        }
+                    }
+                    Text {
+                            anchors.bottom: parent.bottom
+                            //anchors.centerIn: parent.Center
+                            text: "Tin tức"
+                            color: "black"
+                            font.family: "Arial"
+                            font.bold: true
+                            font.pixelSize: 15
+                        verticalAlignment: Text.AlignVCenter
+                        horizontalAlignment: Text.AlignHCenter
+
+                        }
+                    }
+
+                width: parent.width / 5
+            highlighted: false
+            onClicked:
                     {
                         doOpenPage(1)
                     }
@@ -245,9 +311,41 @@ ApplicationWindow
                 Button
                 {
                     id:mainPage_CalendarButton
-                    text: "Lịch"
-                width: parent.width / 4
-                onClicked:
+                    y : parent.height/3
+                    height: parent.height / 8
+
+
+                background : Rectangle {
+                    //width: parent.width
+                    anchors.fill : parent
+                    color: "white"
+                    radius: 10
+
+                    //border.color: "#dfdfdf"
+                    Image {
+                        anchors.top: parent.top
+                        id: lich
+                        source: "images/calenar.png"
+                        BorderImage {
+                            id: xxxx
+                            width: parent.width; height: parent.height
+                        }
+                    }
+                    Text {
+                            anchors.bottom: parent.bottom
+                            text: "    Lịch"
+                            color: "black"
+                            font.family: "Arial"
+                            font.bold: true
+                            font.pixelSize: 15
+                            verticalAlignment: Text.AlignVCenter
+                            horizontalAlignment: Text.AlignHCenter
+
+                        }
+                    }
+
+                width: parent.width / 5
+            onClicked:
                     {
                         doOpenPage(2)
                     }
@@ -255,29 +353,80 @@ ApplicationWindow
                 Button
                 {
                     id:mainPage_LocationButton
-                    text: "Địa điểm"
-                    width: parent.width / 4
-                    onClicked:
-                    {
-                        doOpenPage(3)
+                    y : parent.height/3
+                    height: parent.height / 8
+
+                background : Rectangle {
+                    //width: parent.width
+                    anchors.fill : parent
+                    color: "white"
+                    radius: 10
+
+                    //border.color: "#dfdfdf"
+                    Image {
+                        anchors.top: parent.top
+                        id: diadiem
+                        source: "images/map.png"
+                        BorderImage {
+                            id: x
+
+                            width: parent.width; height: parent.height
+                        }
                     }
+                    Text {
+                            anchors.bottom: parent.bottom
+                            //anchors.centerIn: parent.Center
+                            text: "Địa điểm"
+                            color: "black"
+                            font.family: "Arial"
+                            font.bold: true
+                            font.pixelSize: 15
+                        verticalAlignment: Text.AlignVCenter
+                        horizontalAlignment: Text.AlignHCenter
+
+                        }
+                    }
+
+                    width: parent.width / 5
+            highlighted: false
+                onClicked:
+                {
+                    doOpenPage(3)
                 }
             }
-
-            Image
-            {
-                id: mainPage_ArrowImage
-                source: "qrc:/images/arrow.png"
-                anchors.bottom: parent.bottom
-            }
         }
+        Label{
+            font.pixelSize: 15
+            font.bold: true
+            color: "#8B161C"
+            Label{
+                anchors.bottom:  parent.bottom
+                text: "Sản phẩm của Group03 UIT"
+                font.underline: true
+                font.bold: true
+                color: "#BB0B3A"
+            }
+            anchors.left: parent.left
+            anchors.bottom: parent.bottom
+        }
+
+        //            Image
+//            {
+//                id: mainPage_ArrowImage
+//            source: "qrc:/images/arrow.png"
+
+//            //anchors.left: parent.left
+//            anchors.bottom: parent.bottom
+
+//        }
     }
+}
     function doOpenPage(the_index)
     {
         mainPage_bIsOpenNewPage = true
         if(the_index === 0)
-            mainPage_Label.text = "Diseases"
-        //mainPage_iIndex = the_index
+            mainPage_Label.text = "Tra cứu"
+        mainPage_iIndex = the_index
         mainPage_StackView.push("qrc:/pages/TabPage.qml")
     }
 }

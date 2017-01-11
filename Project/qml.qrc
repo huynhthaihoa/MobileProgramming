@@ -40,5 +40,18 @@
         <file>images/marker.png</file>
         <file>images/scale.png</file>
         <file>images/scale_end.png</file>
+        <file>images/health.png</file>
+        <file>images/button_pressed.png</file>
+        <file>images/button_default.png</file>
+        <file>images/2-Eyecare-Logo.jpg</file>
+        <file>images/index.png</file>
+        <file>images/calendar-256.png</file>
+        <file>images/index.jpeg</file>
+        <file>images/favicon-16x16.png</file>
+        <file>images/search.png</file>
+        <file>images/calenar.png</file>
+        <file>images/map.png</file>
+        <file>images/news.png</file>
+        <file>images/logo.png</file>
     </qresource>
 </RCC>
